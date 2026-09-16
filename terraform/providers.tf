@@ -7,6 +7,14 @@ terraform {
       version = "~> 6.0"
     }
   }
+
+    backend "s3" {
+    bucket         = "taylor-shift-tfstate-819109475304"
+    key            = "terraform.tfstate"
+    region         = "eu-west-3"
+    encrypt        = true
+    dynamodb_table = "taylor-shift-tfstate-lock"
+  }
 }
 
 provider "aws" {
