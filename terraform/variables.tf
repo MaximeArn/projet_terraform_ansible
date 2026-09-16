@@ -7,29 +7,22 @@ variable "aws_region" {
 variable "environment" {
   description = "Deployment environment."
   type        = string
+  default     = "dev"
 
   validation {
     condition     = contains(["dev", "staging", "prod"], var.environment)
     error_message = "Environment must be dev, staging or prod."
   }
 }
-variable "availability_zones" {
-  description = "Availability zones to spread the subnets across."
-  type        = list(string)
-}
+
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC."
+  description = "CIDR block of the project VPC."
   type        = string
+  default     = "10.0.0.0/16"
 }
-variable "public_subnet_cidrs" {
-  description = "CIDR blocks for the public subnets. One per availability zone."
+
+variable "availability_zones" {
+  description = "Availability Zones used by the project."
   type        = list(string)
-}
-variable "app_subnet_cidrs" {
-  description = "CIDR blocks for the application private subnets. One per availability zone."
-  type        = list(string)
-}
-variable "data_subnet_cidrs" {
-  description = "CIDR blocks for the data private subnets. One per availability zone."
-  type        = list(string)
+  default     = ["eu-west-3a", "eu-west-3b"]
 }

@@ -5,16 +5,16 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
 ## Réseau
 
 - 1 VPC, réparti sur 2 zones de disponibilité.
-- 3 tiers de subnets (public, app-private, data-private), chacun présent dans les 2 AZ :
+- 3 tiers de subnets (public, private, database), chacun présent dans les 2 AZ :
   - **public** : uniquement l'ALB.
-  - **app-private** : instances EC2 de l'ASG, points de montage EFS.
-  - **data-private** : instance RDS.
+  - **private** : instances EC2 de l'ASG, points de montage EFS.
+  - **database** : instance RDS.
 - 1 NAT Gateway partagé (pas un par AZ) pour la sortie internet des subnets privés — léger SPOF accepté sur la sortie, sans impact sur la haute dispo de l'ALB/ASG.
 - Aucun accès SSH exposé : administration des instances via AWS SSM Session Manager. Aucune IP publique sur les instances applicatives.
 
 ## Compute
 
-- Un Auto Scaling Group de 2 instances EC2 (t3.small) dans les subnets `app-private`, derrière un Application Load Balancer public.
+- Un Auto Scaling Group de 2 instances EC2 (t3.small) dans les subnets `private`, derrière un Application Load Balancer public.
 - Politique de scaling en target-tracking sur le CPU.
 - PrestaShop tourne en conteneur Docker (image officielle Docker Hub), déployé et configuré par Ansible.
 
