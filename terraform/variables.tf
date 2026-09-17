@@ -38,3 +38,33 @@ variable "database_port" {
   type        = number
   default     = 3306
 }
+
+variable "instance_type" {
+  description = "EC2 instance type for the application instances."
+  type        = string
+  default     = "t3.small"
+}
+
+variable "min_size" {
+  description = "Minimum number of application instances."
+  type        = number
+  default     = 2
+}
+
+variable "max_size" {
+  description = "Maximum number of application instances."
+  type        = number
+  default     = 4
+}
+
+variable "desired_capacity" {
+  description = "Desired number of application instances."
+  type        = number
+  default     = 2
+}
+
+variable "cpu_target_value" {
+  description = "Target average CPU utilization (%) for the scaling policy."
+  type        = number
+  default     = 50
+}
