@@ -11,6 +11,7 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
   - **database** : instance RDS.
 - 1 NAT Gateway partagé (pas un par AZ) pour la sortie internet des subnets privés — léger SPOF accepté sur la sortie, sans impact sur la haute dispo de l'ALB/ASG.
 - Aucun accès SSH exposé : administration des instances via AWS SSM Session Manager. Aucune IP publique sur les instances applicatives.
+- Security groups en chaîne, sans règle basée sur des CIDR pour le trafic interne : `alb` accepte Internet sur le port applicatif, `app` n'accepte que le SG `alb`, `database` et `efs` n'acceptent que le SG `app`.
 
 ## Compute
 

@@ -17,3 +17,15 @@ variable "availability_zones" {
   description = "Availability Zones used by the network."
   type        = list(string)
 }
+
+variable "app_port" {
+  description = "Port the application listens on."
+  type        = number
+  default     = 80
+}
+
+variable "database_port" {
+  description = "Port the database listens on."
+  type        = number
+  default     = 3306
+}

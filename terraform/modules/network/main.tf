@@ -1,6 +1,4 @@
-# VPC
 resource "aws_vpc" "main" {
-
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -142,4 +140,88 @@ resource "aws_route_table_association" "database" {
 
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database.id
+}
+
+# Security groups 
+
+resource "aws_security_group" "alb" {
+  name        = "taylor-shift-alb-${var.environment}"
+  description = "Security group for the ALB"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name        = "taylor-shift-alb-${var.environment}"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "alb_http" {
+  security_group_id = aws_security_group.alb.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = var.app_port
+  to_port     = var.app_port
+  ip_protocol = "tcp"
+}
+resource "aws_security_group" "app" {
+  name        = "taylor-shift-app-${var.environment}"
+  description = "Security group for the application instances"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name        = "taylor-shift-app-${var.environment}"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "app_from_alb" {
+  security_group_id = aws_security_group.app.id
+
+  referenced_security_group_id = aws_security_group.alb.id
+
+  from_port   = var.app_port
+  to_port     = var.app_port
+  ip_protocol = "tcp"
+}
+
+resource "aws_security_group" "database" {
+  name        = "taylor-shift-database-${var.environment}"
+  description = "Security group for the database"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name        = "taylor-shift-database-${var.environment}"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "database_from_app" {
+  security_group_id = aws_security_group.database.id
+
+  referenced_security_group_id = aws_security_group.app.id
+
+  from_port   = var.database_port
+  to_port     = var.database_port
+  ip_protocol = "tcp"
+}
+
+resource "aws_security_group" "efs" {
+  name        = "taylor-shift-efs-${var.environment}"
+  description = "Security group for the EFS mount targets"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name        = "taylor-shift-efs-${var.environment}"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "efs_from_app" {
+  security_group_id = aws_security_group.efs.id
+
+  referenced_security_group_id = aws_security_group.app.id
+
+  from_port   = 2049
+  to_port     = 2049
+  ip_protocol = "tcp"
 }
