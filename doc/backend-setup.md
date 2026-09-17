@@ -41,11 +41,10 @@ Le bloc backend est déjà déclaré dans `terraform/providers.tf` :
 ```hcl
 backend "s3" {
   bucket         = "taylor-shift-tfstate-819109475304"
-  key            = "terraform.tfstate"
   region         = "eu-west-3"
   encrypt        = true
   dynamodb_table = "taylor-shift-tfstate-lock"
 }
 ```
 
-Une fois le bucket et la table créés, chaque membre de l'équipe n'a plus qu'à lancer `terraform -chdir=terraform init` pour se connecter au backend partagé.
+`bucket`, `region` et `dynamodb_table` sont partagés par les trois environnements (dev/staging/prod) — un seul bucket, un seul verrou DynamoDB suffisent, le verrouillage étant scopé par bucket+clé. La clé du state (`key`) n'est volontairement pas fixée ici, car un bloc `backend` ne peut pas utiliser de variable Terraform : elle est donc fournie explicitement à chaque `init`, pour que chaque environnement écrive dans son propre fichier state au sein du même bucket, sans jamais se marcher dessus. Voir [quickstart.md](quickstart.md) pour les commandes exactes par environnement.

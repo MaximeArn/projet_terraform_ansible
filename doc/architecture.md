@@ -15,7 +15,7 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
 
 ## Compute
 
-- Un Auto Scaling Group de 2 instances EC2 (t3.small) dans les subnets `private`, derrière un Application Load Balancer public.
+- Un Auto Scaling Group d'instances EC2 dans les subnets `private`, derrière un Application Load Balancer public. Taille et nombre d'instances varient par environnement (voir plus bas).
 - Politique de scaling en target-tracking sur le CPU.
 - PrestaShop tourne en conteneur Docker (image officielle Docker Hub), déployé et configuré par Ansible.
 
@@ -35,4 +35,7 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
 ## Organisation Terraform
 
 - Modules dédiés : `network`, `compute`, `database`, `storage`.
-- Séparation des environnements (dev/staging/prod) via un fichier `.tfvars` par environnement dans `terraform/environments/`.
+- Séparation des environnements (dev/staging/prod) via un fichier `.tfvars` par environnement dans `terraform/environments/`, et une clé de state distincte par environnement dans le même bucket S3 (voir [backend-setup.md](backend-setup.md)).
+  - `dev` : 1 instance `t3.micro` (min 1, max 2) — itération rapide, coût minimal.
+  - `staging` : 1 instance `t3.small` (min 1, max 2) — même gabarit que prod, échelle réduite.
+  - `prod` : 2 instances `t3.small` (min 2, max 4) — haute disponibilité réelle.
