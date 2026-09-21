@@ -21,9 +21,35 @@ module "compute" {
   cpu_target_value = var.cpu_target_value
   app_port         = var.app_port
 
-  vpc_id                 = module.network.vpc_id
-  public_subnet_ids      = module.network.public_subnet_ids
-  private_subnet_ids     = module.network.private_subnet_ids
-  alb_security_group_id  = module.network.alb_security_group_id
-  app_security_group_id  = module.network.app_security_group_id
+  vpc_id                = module.network.vpc_id
+  public_subnet_ids     = module.network.public_subnet_ids
+  private_subnet_ids    = module.network.private_subnet_ids
+  alb_security_group_id = module.network.alb_security_group_id
+  app_security_group_id = module.network.app_security_group_id
+}
+
+module "database" {
+  source = "./modules/database"
+
+  environment = var.environment
+
+  database_subnet_ids        = module.network.database_subnet_ids
+  database_security_group_id = module.network.database_security_group_id
+
+  database_name     = var.database_name
+  database_username = var.database_username
+  database_password = var.database_password
+
+  database_port     = var.database_port
+  instance_class    = var.database_instance_class
+  allocated_storage = var.database_allocated_storage
+}
+
+module "storage" {
+  source = "./modules/storage"
+
+  environment = var.environment
+
+  private_subnet_ids    = module.network.private_subnet_ids
+  efs_security_group_id = module.network.efs_security_group_id
 }

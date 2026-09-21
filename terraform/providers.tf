@@ -8,7 +8,7 @@ terraform {
     }
   }
 
-    backend "s3" {
+  backend "s3" {
     bucket         = "taylor-shift-tfstate-819109475304"
     region         = "eu-west-3"
     encrypt        = true

@@ -68,3 +68,33 @@ variable "cpu_target_value" {
   type        = number
   default     = 50
 }
+
+variable "database_name" {
+  description = "Name of the PrestaShop database."
+  type        = string
+  default     = "prestashop"
+}
+
+variable "database_username" {
+  description = "Username used by PrestaShop to connect to MySQL."
+  type        = string
+  default     = "prestashop"
+}
+
+variable "database_password" {
+  description = "Password used by PrestaShop to connect to MySQL."
+  type        = string
+  sensitive   = true
+}
+
+variable "database_instance_class" {
+  description = "RDS instance class."
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "database_allocated_storage" {
+  description = "RDS allocated storage in GB."
+  type        = number
+  default     = 20
+}

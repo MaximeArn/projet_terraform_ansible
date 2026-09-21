@@ -22,3 +22,17 @@ output "alb_dns_name" {
   description = "DNS name of the Application Load Balancer — the application endpoint."
   value       = module.compute.alb_dns_name
 }
+output "database_endpoint" {
+  description = "Private DNS endpoint of the RDS MySQL database."
+  value       = module.database.endpoint
+}
+
+output "database_port" {
+  description = "Port used by the RDS MySQL database."
+  value       = module.database.port
+}
+
+output "efs_file_system_id" {
+  description = "ID of the EFS file system."
+  value       = module.storage.file_system_id
+}
