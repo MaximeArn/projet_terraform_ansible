@@ -11,18 +11,21 @@
 Trois environnements existent (`dev`, `staging`, `prod`), chacun avec son propre fichier de variables (`terraform/environments/<env>.tfvars`) et son propre fichier state dans le bucket S3 partagé (voir [backend-setup.md](backend-setup.md)). Chaque environnement se déploie avec deux commandes : un `init` qui pointe vers sa clé de state, puis un `apply` avec son fichier de variables.
 
 **Dev :**
+
 ```sh
 terraform -chdir=terraform init -backend-config="key=dev/terraform.tfstate"
 terraform -chdir=terraform apply -var-file=environments/dev.tfvars
 ```
 
 **Staging :**
+
 ```sh
 terraform -chdir=terraform init -reconfigure -backend-config="key=staging/terraform.tfstate"
 terraform -chdir=terraform apply -var-file=environments/staging.tfvars
 ```
 
 **Prod :**
+
 ```sh
 terraform -chdir=terraform init -reconfigure -backend-config="key=prod/terraform.tfstate"
 terraform -chdir=terraform apply -var-file=environments/prod.tfvars

@@ -147,9 +147,9 @@ resource "aws_lb_listener" "app" {
 }
 
 resource "aws_autoscaling_policy" "cpu" {
-  name                    = "taylor-shift-app-cpu-${var.environment}"
-  autoscaling_group_name  = aws_autoscaling_group.app.name
-  policy_type             = "TargetTrackingScaling"
+  name                   = "taylor-shift-app-cpu-${var.environment}"
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  policy_type            = "TargetTrackingScaling"
 
   target_tracking_configuration {
     predefined_metric_specification {

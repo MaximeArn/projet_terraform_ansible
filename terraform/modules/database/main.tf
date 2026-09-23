@@ -14,12 +14,12 @@ resource "aws_db_instance" "database" {
   engine         = "mysql"
   engine_version = "8.0"
 
-  instance_class        = var.instance_class
-  allocated_storage     = var.allocated_storage
-  storage_type          = "gp3"
-  storage_encrypted     = true
-  publicly_accessible   = false
-  port                  = var.database_port
+  instance_class      = var.instance_class
+  allocated_storage   = var.allocated_storage
+  storage_type        = "gp3"
+  storage_encrypted   = true
+  publicly_accessible = false
+  port                = var.database_port
 
   db_name  = var.database_name
   username = var.database_username

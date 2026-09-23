@@ -12,7 +12,7 @@ terraform {
     bucket         = "taylor-shift-tfstate-819109475304"
     region         = "eu-west-3"
     encrypt        = true
-    dynamodb_table = "taylor-shift-tfstate-lock"
+    use_lockfile   = true
   }
 }
 
