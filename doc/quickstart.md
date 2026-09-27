@@ -42,3 +42,5 @@ Installer les collections Ansible nécessaires (inventaire dynamique et connexio
 ```sh
 ansible-galaxy install -r ansible/requirements.yml
 ```
+
+Sur le premier `apply` d'un environnement neuf, si `ansible-inventory -i ansible/inventory.yml --graph` ne montre aucune instance, relancer le `terraform apply` : les instances ASG n'ont pas toujours fini de démarrer au moment où l'inventaire est généré.
