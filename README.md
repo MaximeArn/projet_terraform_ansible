@@ -7,3 +7,4 @@ Infrastructure AWS pour l'application de billetterie Taylor Shift's Ticket Shop 
 - [Architecture](doc/architecture.md) — choix d'infrastructure et placement des composants
 - [Quickstart](doc/quickstart.md) — déploiement
 - [Backend setup](doc/backend-setup.md) — mise en place du state Terraform distant
+- [Traffic handling](doc/traffic-handling.md) — gestion du trafic, montée en charge, limites
