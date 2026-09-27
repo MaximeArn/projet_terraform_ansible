@@ -1,0 +1,4 @@
+efs_mount_path: /mnt/efs
+database_name: prestashop
+database_username: prestashop
+prestashop_admin_email: admin@taylorshift.example

@@ -19,6 +19,7 @@ resource "ansible_group" "app" {
     database_endpoint      = module.database.endpoint
     database_port          = module.database.port
     efs_dns_name            = module.storage.file_system_dns_name
+    alb_dns_name                = module.compute.alb_dns_name
     ansible_aws_ssm_region  = var.aws_region
     ansible_aws_ssm_bucket_name = aws_s3_bucket.ssm.id
   }

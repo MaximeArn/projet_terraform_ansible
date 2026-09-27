@@ -5,3 +5,5 @@ collections:
     version: "11.0.0"
   - name: ansible.posix
     version: "2.2.2"
+  - name: community.docker
+    version: "5.3.0"

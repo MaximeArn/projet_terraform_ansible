@@ -1,0 +1,13 @@
+- name: Recreate PrestaShop container
+  community.docker.docker_container:
+    name: prestashop
+    image: prestashop/prestashop:latest
+    state: started
+    recreate: true
+    env_file: /opt/prestashop/docker.env
+    ports:
+      - "80:80"
+    volumes:
+      - "{{ efs_mount_path }}:/var/www/html"
+    restart_policy: unless-stopped
+  listen: Recreate PrestaShop container

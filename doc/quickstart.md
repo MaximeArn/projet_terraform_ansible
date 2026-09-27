@@ -35,12 +35,28 @@ terraform -chdir=terraform apply -var-file=environments/prod.tfvars
 
 Chaque environnement crée : le VPC et ses 6 subnets (2 publics, 2 privés, 2 database), l'Internet Gateway, le NAT Gateway, les route tables, les 4 security groups, ainsi que l'Auto Scaling Group applicatif derrière son Application Load Balancer. Seules la taille/le nombre d'instances diffèrent entre environnements (voir [architecture.md](architecture.md)).
 
+Le mot de passe de la base de données n'a pas de valeur par défaut : Terraform le demande automatiquement (saisie masquée). Sa valeur se trouve dans le Vault Ansible :
+```sh
+ansible-vault view ansible/group_vars/app/vault.yml
+```
+
 ## Configuration (Ansible)
 
-Installer les collections Ansible nécessaires (inventaire dynamique et connexion SSM) :
+Installer les collections Ansible nécessaires (inventaire dynamique, connexion SSM, gestion Docker) :
 
 ```sh
 ansible-galaxy install -r ansible/requirements.yml
 ```
 
 Sur le premier `apply` d'un environnement neuf, si `ansible-inventory -i ansible/inventory.yml --graph` ne montre aucune instance, relancer le `terraform apply` : les instances ASG n'ont pas toujours fini de démarrer au moment où l'inventaire est généré.
+
+Déployer PrestaShop sur les instances :
+```sh
+ansible-playbook -i ansible/inventory.yml ansible/site.yml --ask-vault-pass
+```
+
+## Accéder à l'application
+
+```sh
+terraform -chdir=terraform output alb_dns_name
+```

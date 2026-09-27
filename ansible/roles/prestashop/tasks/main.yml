@@ -1,0 +1,29 @@
+- name: Create PrestaShop config directory
+  ansible.builtin.file:
+    path: /opt/prestashop
+    state: directory
+    mode: "0755"
+
+- name: Generate PrestaShop environment file
+  ansible.builtin.template:
+    src: docker.env.j2
+    dest: /opt/prestashop/docker.env
+    mode: "0600"
+  notify: Recreate PrestaShop container
+
+- name: Install Python requests library
+  ansible.builtin.dnf:
+    name: python3-requests
+    state: present
+
+- name: Run PrestaShop container
+  community.docker.docker_container:
+    name: prestashop
+    image: prestashop/prestashop:latest
+    state: started
+    env_file: /opt/prestashop/docker.env
+    ports:
+      - "80:80"
+    volumes:
+      - "{{ efs_mount_path }}:/var/www/html"
+    restart_policy: unless-stopped
