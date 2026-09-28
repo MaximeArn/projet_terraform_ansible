@@ -42,15 +42,18 @@ ansible-vault view ansible/group_vars/app/vault.yml
 
 ## Configuration (Ansible)
 
-Installer les collections Ansible nécessaires (inventaire dynamique, connexion SSM, gestion Docker) :
-
+**1.** Installer les collections Ansible nécessaires (inventaire dynamique, connexion SSM, gestion Docker) :
 ```sh
 ansible-galaxy install -r ansible/requirements.yml
 ```
 
-Sur le premier `apply` d'un environnement neuf, si `ansible-inventory -i ansible/inventory.yml --graph` ne montre aucune instance, relancer le `terraform apply` : les instances ASG n'ont pas toujours fini de démarrer au moment où l'inventaire est généré.
+**2.** Vérifier que l'inventaire dynamique voit bien les instances :
+```sh
+ansible-inventory -i ansible/inventory.yml --graph
+```
+Si le groupe `app` est vide, relancer le `terraform apply` de l'environnement (les instances ASG n'ont pas toujours fini de démarrer au moment où l'inventaire est généré), puis revérifier.
 
-Déployer PrestaShop sur les instances :
+**3.** Déployer PrestaShop sur les instances :
 ```sh
 ansible-playbook -i ansible/inventory.yml ansible/site.yml --ask-vault-pass
 ```

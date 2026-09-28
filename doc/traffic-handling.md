@@ -10,9 +10,9 @@ Le nombre d'instances applicatives s'ajuste automatiquement en fonction du CPU m
 
 ## Si une instance devient indisponible
 
-L'ALB détecte qu'une instance ne répond plus correctement et arrête de lui envoyer du trafic — les autres instances continuent de servir les clients sans interruption visible. L'instance en panne est ensuite remplacée automatiquement par une nouvelle.
+L'ALB détecte en temps réel qu'une instance ne répond plus correctement (panne applicative comprise, pas seulement une panne système) et arrête immédiatement de lui envoyer du trafic — les autres instances continuent de servir les clients sans interruption visible.
 
-**Limite actuelle** : cette nouvelle instance démarre "nue" (système de base uniquement). La configuration applicative (Docker, montage du stockage partagé, déploiement de PrestaShop) n'est pas réappliquée automatiquement — il faut relancer manuellement le déploiement Ansible pour qu'elle rejoigne réellement le service. C'est un choix assumé : automatiser entièrement cette étape demanderait un mécanisme que le projet ne couvre pas.
+Le remplacement automatique de l'instance par l'Auto Scaling Group, lui, se base uniquement sur l'état système (pas sur la santé applicative). C'est un choix délibéré : une nouvelle instance démarre "nue" et sa configuration applicative (Docker, montage du stockage partagé, déploiement de PrestaShop) n'est pas automatique — il faut relancer manuellement le déploiement Ansible pour qu'elle rejoigne réellement le service. Si le remplacement se basait sur la santé applicative, l'ASG remplacerait en boucle une instance en cours de reconfiguration manuelle, avant même de lui laisser le temps d'être prête. Dans un contexte où la configuration des nouvelles instances serait elle aussi automatisée (auto-configuration au démarrage), ce choix serait revu pour se baser sur la santé applicative de bout en bout.
 
 ## Autres limites
 
