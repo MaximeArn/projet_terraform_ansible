@@ -4,7 +4,7 @@
 
 - Terraform >= 1.6
 - Un accès AWS configuré (credentials/profile), via un IAM user (pas root)
-- Le backend S3/DynamoDB déjà en place — voir [backend-setup.md](backend-setup.md)
+- Le backend S3 déjà en place, voir [backend-setup.md](backend-setup.md)
 
 ## Déploiement
 
@@ -31,7 +31,7 @@ terraform -chdir=terraform init -reconfigure -backend-config="key=prod/terraform
 terraform -chdir=terraform apply -var-file=environments/prod.tfvars
 ```
 
-`-reconfigure` n'est nécessaire que pour basculer d'un environnement à l'autre dans un dossier de travail déjà initialisé (par exemple pour tester les trois depuis le même poste) — pas sur un premier `init` après un clone frais.
+`-reconfigure` n'est nécessaire que pour basculer d'un environnement à l'autre dans un dossier de travail déjà initialisé (par exemple pour tester les trois depuis le même poste), pas sur un premier `init` après un clone frais.
 
 Chaque environnement crée : le VPC et ses 6 subnets (2 publics, 2 privés, 2 database), l'Internet Gateway, le NAT Gateway, les route tables, les 4 security groups, ainsi que l'Auto Scaling Group applicatif derrière son Application Load Balancer. Seules la taille/le nombre d'instances diffèrent entre environnements (voir [architecture.md](architecture.md)).
 

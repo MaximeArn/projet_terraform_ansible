@@ -9,7 +9,7 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
   - **public** : uniquement l'ALB.
   - **private** : instances EC2 de l'ASG, points de montage EFS.
   - **database** : instance RDS.
-- 1 NAT Gateway partagé (pas un par AZ) pour la sortie internet des subnets privés — léger SPOF accepté sur la sortie, sans impact sur la haute dispo de l'ALB/ASG.
+- 1 NAT Gateway partagé (pas un par AZ) pour la sortie internet des subnets privés, léger SPOF accepté sur la sortie, sans impact sur la haute dispo de l'ALB/ASG.
 - Aucun accès SSH exposé : administration des instances via AWS SSM Session Manager. Aucune IP publique sur les instances applicatives.
 - Security groups en chaîne, sans règle basée sur des CIDR pour le trafic interne : `alb` accepte Internet sur le port applicatif, `app` n'accepte que le SG `alb`, `database` et `efs` n'acceptent que le SG `app`.
 
@@ -18,6 +18,7 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
 - Un Auto Scaling Group d'instances EC2 dans les subnets `private`, derrière un Application Load Balancer public. Taille et nombre d'instances varient par environnement (voir plus bas).
 - Politique de scaling en target-tracking sur le CPU.
 - PrestaShop tourne en conteneur Docker (image officielle Docker Hub), déployé et configuré par Ansible.
+- Le remplacement automatique d'instance par l'ASG se base sur la santé système, pas sur la santé applicative (voir [traffic-handling.md](traffic-handling.md) pour la justification de ce choix).
 
 ## Stockage partagé
 
@@ -25,17 +26,16 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
 
 ## Base de données
 
-- RDS MySQL (moteur natif de PrestaShop).
-- Single-AZ par défaut ; le Multi-AZ reste une option activable (variable) pour un scénario "prod", sans être le réglage par défaut.
+- RDS MySQL (moteur natif de PrestaShop), single-AZ.
 
 ## Secrets
 
-- Ansible Vault est l'unique source de vérité pour le mot de passe de la base de données. Pas de service AWS dédié (Secrets Manager) — le budget n'étant pas une contrainte forte, ce choix est motivé par la simplicité et le respect direct des critères de notation sur la gestion des secrets.
+- Ansible Vault est l'unique source de vérité pour les secrets (mot de passe de la base de données, mot de passe administrateur PrestaShop). Pas de service AWS dédié (Secrets Manager), le budget n'étant pas une contrainte forte, ce choix est motivé par la simplicité et le respect direct des critères de notation sur la gestion des secrets.
 
 ## Organisation Terraform
 
 - Modules dédiés : `network`, `compute`, `database`, `storage`.
 - Séparation des environnements (dev/staging/prod) via un fichier `.tfvars` par environnement dans `terraform/environments/`, et une clé de state distincte par environnement dans le même bucket S3 (voir [backend-setup.md](backend-setup.md)).
-  - `dev` : 1 instance `t3.micro` (min 1, max 2) — itération rapide, coût minimal.
-  - `staging` : 1 instance `t3.small` (min 1, max 2) — même gabarit que prod, échelle réduite.
-  - `prod` : 2 instances `t3.small` (min 2, max 4) — haute disponibilité réelle.
+  - `dev` : 1 instance `t3.micro` (min 1, max 2), itération rapide, coût minimal.
+  - `staging` : 1 instance `t3.small` (min 1, max 2), même gabarit que prod, échelle réduite.
+  - `prod` : 2 instances `t3.small` (min 2, max 4), haute disponibilité réelle.
