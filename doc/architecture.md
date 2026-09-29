@@ -4,14 +4,18 @@ Infrastructure AWS pour PrestaShop (Taylor Shift's Ticket Shop), provisionnée a
 
 ## Réseau
 
-- 1 VPC, réparti sur 2 zones de disponibilité.
-- 3 tiers de subnets (public, private, database), chacun présent dans les 2 AZ :
-  - **public** : uniquement l'ALB.
-  - **private** : instances EC2 de l'ASG, points de montage EFS.
-  - **database** : instance RDS.
-- 1 NAT Gateway partagé (pas un par AZ) pour la sortie internet des subnets privés, léger SPOF accepté sur la sortie, sans impact sur la haute dispo de l'ALB/ASG.
-- Aucun accès SSH exposé : administration des instances via AWS SSM Session Manager. Aucune IP publique sur les instances applicatives.
-- Security groups en chaîne, sans règle basée sur des CIDR pour le trafic interne : `alb` accepte Internet sur le port applicatif, `app` n'accepte que le SG `alb`, `database` et `efs` n'acceptent que le SG `app`.
+- **VPC** : réseau privé isolé, réparti sur 2 zones de disponibilité pour tolérer la perte d'une AZ sans interrompre le service.
+- **Internet Gateway** : porte d'entrée/sortie du VPC vers Internet, utilisée par l'ALB (trafic entrant) et le NAT Gateway (trafic sortant).
+- **3 tiers de subnets**, chacun présent dans les 2 AZ, pour isoler les composants selon ce qu'ils doivent exposer :
+  - **public** : héberge uniquement l'ALB, seul élément qui doit être joignable depuis Internet.
+  - **private** : héberge les instances EC2 de l'ASG (PrestaShop). Aucune IP publique, jamais exposées directement.
+  - **database** : héberge RDS, isolée du reste, n'accepte que le trafic venant des instances applicatives.
+- **NAT Gateway** (partagé, pas un par AZ) : permet aux instances des subnets privés de sortir vers Internet (mises à jour système, image Docker, agent SSM) sans avoir elles-mêmes d'IP publique. Léger SPOF accepté sur la sortie, sans impact sur la haute dispo de l'ALB/ASG qui restent répartis sur les 2 AZ.
+- **Aucun accès SSH exposé** : administration des instances via AWS SSM Session Manager, qui ne nécessite ni port entrant ouvert ni clé SSH à gérer.
+- **Security groups en chaîne**, sans règle basée sur des CIDR pour le trafic interne : chaque SG n'autorise que le SG qui le précède dans la chaîne, jamais une plage d'IP.
+  - `alb` : accepte Internet sur le port applicatif, seule entrée publique de l'infrastructure.
+  - `app` : n'accepte que le SG `alb`, les instances ne sont joignables que via l'ALB.
+  - `database` et `efs` : n'acceptent que le SG `app`, seules les instances applicatives peuvent y accéder.
 
 ## Compute
 

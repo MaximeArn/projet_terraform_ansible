@@ -1,0 +1,71 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Architecture" id="taylor-shift-architecture">
+    <mxGraphModel dx="1513" dy="1014" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="internet" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Internet" vertex="1">
+          <mxGeometry height="40" width="140" x="560" y="43" as="geometry" />
+        </mxCell>
+        <mxCell id="admin" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Ansible (SSM, pas de SSH)" vertex="1">
+          <mxGeometry height="40" width="180" x="140" y="123" as="geometry" />
+        </mxCell>
+        <mxCell id="igw" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="Internet Gateway" vertex="1">
+          <mxGeometry height="40" width="140" x="560" y="123" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;verticalAlign=top;align=left;spacingLeft=10;spacingTop=8;fontStyle=1;" value="VPC (10.0.0.0/16, 2 zones de disponibilite)" vertex="1">
+          <mxGeometry height="600" width="1080" x="60" y="203" as="geometry" />
+        </mxCell>
+        <mxCell id="tier-public" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" value="Subnets publics" vertex="1">
+          <mxGeometry height="110" width="1000" x="100" y="243" as="geometry" />
+        </mxCell>
+        <mxCell id="alb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Application Load Balancer" vertex="1">
+          <mxGeometry height="50" width="220" x="340" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="nat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="NAT Gateway" vertex="1">
+          <mxGeometry height="50" width="220" x="680" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="tier-private" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" value="Subnets prives" vertex="1">
+          <mxGeometry height="150" width="1000" x="100" y="383" as="geometry" />
+        </mxCell>
+        <mxCell id="asg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Auto Scaling Group&#xa;EC2 (Docker + PrestaShop)" vertex="1">
+          <mxGeometry height="60" width="280" x="310" y="428" as="geometry" />
+        </mxCell>
+        <mxCell id="efs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="EFS (stockage partage)" vertex="1">
+          <mxGeometry height="60" width="220" x="690" y="428" as="geometry" />
+        </mxCell>
+        <mxCell id="tier-database" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" value="Subnets database" vertex="1">
+          <mxGeometry height="110" width="1000" x="100" y="563" as="geometry" />
+        </mxCell>
+        <mxCell id="rds" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="RDS MySQL" vertex="1">
+          <mxGeometry height="50" width="220" x="340" y="598" as="geometry" />
+        </mxCell>
+        <mxCell id="e-internet-igw" edge="1" parent="1" source="internet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="igw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-igw-alb" edge="1" parent="1" source="igw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="alb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-alb-asg" edge="1" parent="1" source="alb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="asg" value="port 80">
+          <mxGeometry relative="1" x="-0.1" y="-30" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-asg-rds" edge="1" parent="1" source="asg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="rds" value="port 3306">
+          <mxGeometry relative="1" y="-30" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-asg-efs" edge="1" parent="1" source="asg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="efs" value="NFS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-nat-igw" edge="1" parent="1" source="nat" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="igw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-admin-asg" edge="1" parent="1" source="admin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;" target="asg" value="SSM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
